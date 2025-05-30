@@ -1,13 +1,16 @@
 import type { Route } from "./+types/home";
 import { Welcome } from "../welcome/welcome";
+import { NavBar } from "~/components/ui/navBar";
 
 export function meta({}: Route.MetaArgs) {
   return [
-    { title: "New React Router App" },
-    { name: "description", content: "Welcome to React Router!" },
+    { title: "invoice Creator" },
+    { name: "description", content: "Welcome to invoice Creator!"},
   ];
 }
 
 export default function Home() {
-  return <Welcome />;
+  return (
+    <NavBar></NavBar>
+  )
 }
