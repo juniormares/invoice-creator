@@ -37,6 +37,7 @@ body {
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
   --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
@@ -57,71 +58,76 @@ body {
 
 :root {
   --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.129 0.042 264.695);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.129 0.042 264.695);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.129 0.042 264.695);
-  --primary: oklch(0.208 0.042 265.755);
-  --primary-foreground: oklch(0.984 0.003 247.858);
-  --secondary: oklch(0.968 0.007 247.896);
-  --secondary-foreground: oklch(0.208 0.042 265.755);
-  --muted: oklch(0.968 0.007 247.896);
-  --muted-foreground: oklch(0.554 0.046 257.417);
-  --accent: oklch(0.968 0.007 247.896);
-  --accent-foreground: oklch(0.208 0.042 265.755);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.929 0.013 255.508);
-  --input: oklch(0.929 0.013 255.508);
-  --ring: oklch(0.704 0.04 256.788);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.984 0.003 247.858);
-  --sidebar-foreground: oklch(0.129 0.042 264.695);
-  --sidebar-primary: oklch(0.208 0.042 265.755);
-  --sidebar-primary-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-accent: oklch(0.968 0.007 247.896);
-  --sidebar-accent-foreground: oklch(0.208 0.042 265.755);
-  --sidebar-border: oklch(0.929 0.013 255.508);
-  --sidebar-ring: oklch(0.704 0.04 256.788);
+  
+  /* New Earthy Color Palette with White Text */
+  --background: #2F4F4F; /* Dark Slate Gray - main background */
+  --foreground: #FFFFFF; /* White - main text for readability */
+  --card: #708090; /* Slate Gray - card backgrounds */
+  --card-foreground: #FFFFFF; /* White text on cards */
+  --popover: #708090; /* Slate Gray for popovers */
+  --popover-foreground: #FFFFFF; /* White text on popovers */
+  --primary: #CD853F; /* Peru/Sandy Brown - primary color */
+  --primary-foreground: #FFFFFF; /* White text on primary */
+  --secondary: #5F8A5F; /* Dark Sea Green - secondary */
+  --secondary-foreground: #FFFFFF; /* White text on secondary */
+  --muted: #696969; /* Dim Gray for muted elements */
+  --muted-foreground: #E0E0E0; /* Light gray for muted text */
+  --accent: #8FBC8F; /* Dark Sea Green lighter for accents */
+  --accent-foreground: #2F4F4F; /* Dark text on light accent */
+  --destructive: #CD5C5C; /* Indian Red for destructive actions */
+  --destructive-foreground: #FFFFFF; /* White text on destructive */
+  --border: #696969; /* Dim Gray for borders */
+  --input: #708090; /* Slate Gray for input backgrounds */
+  --ring: #CD853F; /* Peru for focus rings */
+  --chart-1: #CD853F; /* Peru */
+  --chart-2: #708090; /* Slate Gray */
+  --chart-3: #5F8A5F; /* Dark Sea Green */
+  --chart-4: #8FBC8F; /* Dark Sea Green Light */
+  --chart-5: #2F4F4F; /* Dark Slate Gray */
+  --sidebar: #2F4F4F; /* Dark Slate Gray for sidebar */
+  --sidebar-foreground: #FFFFFF; /* White text in sidebar */
+  --sidebar-primary: #CD853F; /* Peru for sidebar primary */
+  --sidebar-primary-foreground: #FFFFFF; /* White text */
+  --sidebar-accent: #8FBC8F; /* Light accent for sidebar */
+  --sidebar-accent-foreground: #2F4F4F; /* Dark text on light accent */
+  --sidebar-border: #696969; /* Dim Gray for sidebar borders */
+  --sidebar-ring: #CD853F; /* Peru for sidebar focus */
 }
 
 .dark {
-  --background: oklch(0.129 0.042 264.695);
-  --foreground: oklch(0.984 0.003 247.858);
-  --card: oklch(0.208 0.042 265.755);
-  --card-foreground: oklch(0.984 0.003 247.858);
-  --popover: oklch(0.208 0.042 265.755);
-  --popover-foreground: oklch(0.984 0.003 247.858);
-  --primary: oklch(0.929 0.013 255.508);
-  --primary-foreground: oklch(0.208 0.042 265.755);
-  --secondary: oklch(0.279 0.041 260.031);
-  --secondary-foreground: oklch(0.984 0.003 247.858);
-  --muted: oklch(0.279 0.041 260.031);
-  --muted-foreground: oklch(0.704 0.04 256.788);
-  --accent: oklch(0.279 0.041 260.031);
-  --accent-foreground: oklch(0.984 0.003 247.858);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.551 0.027 264.364);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.208 0.042 265.755);
-  --sidebar-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-accent: oklch(0.279 0.041 260.031);
-  --sidebar-accent-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.551 0.027 264.364);
+  /* Dark mode with even better contrast */
+  --background: #1C1C1C; /* Very dark background */
+  --foreground: #FFFFFF; /* Pure white text */
+  --card: #2F4F4F; /* Dark Slate Gray for cards */
+  --card-foreground: #FFFFFF; /* White text on cards */
+  --popover: #2F4F4F; /* Dark Slate Gray for popovers */
+  --popover-foreground: #FFFFFF; /* White text */
+  --primary: #DEB887; /* Burlywood - lighter primary for dark mode */
+  --primary-foreground: #1C1C1C; /* Dark text on light primary */
+  --secondary: #708090; /* Slate Gray for secondary */
+  --secondary-foreground: #FFFFFF; /* White text */
+  --muted: #2F4F4F; /* Dark Slate Gray for muted elements */
+  --muted-foreground: #B0B0B0; /* Light gray for muted text */
+  --accent: #8FBC8F; /* Dark Sea Green Light for accents */
+  --accent-foreground: #1C1C1C; /* Dark text on light accent */
+  --destructive: #FF6B6B; /* Lighter red for dark mode */
+  --destructive-foreground: #FFFFFF; /* White text */
+  --border: #696969; /* Dim Gray for borders */
+  --input: #2F4F4F; /* Dark Slate Gray for inputs */
+  --ring: #DEB887; /* Burlywood for focus rings */
+  --chart-1: #DEB887; /* Burlywood */
+  --chart-2: #8FBC8F; /* Dark Sea Green Light */
+  --chart-3: #708090; /* Slate Gray */
+  --chart-4: #5F8A5F; /* Dark Sea Green */
+  --chart-5: #2F4F4F; /* Dark Slate Gray */
+  --sidebar: #1C1C1C; /* Very dark sidebar */
+  --sidebar-foreground: #FFFFFF; /* White text */
+  --sidebar-primary: #DEB887; /* Burlywood */
+  --sidebar-primary-foreground: #1C1C1C; /* Dark text */
+  --sidebar-accent: #8FBC8F; /* Light accent */
+  --sidebar-accent-foreground: #1C1C1C; /* Dark text */
+  --sidebar-border: #696969; /* Dim Gray */
+  --sidebar-ring: #DEB887; /* Burlywood */
 }
 
 @layer base {
@@ -130,5 +136,414 @@ body {
   }
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+/* ==========================================================================
+   COMPONENT STYLES
+   ========================================================================== */
+
+@layer components {
+  /* Navigation Bar Styles */
+  .navbar {
+    @apply sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60;
+  }
+  
+  .navbar-container {
+    @apply container flex h-14 max-w-screen-2xl items-center px-4;
+  }
+  
+  .navbar-nav {
+    @apply flex items-center space-x-4 lg:space-x-6;
+  }
+  
+  .navbar-link {
+    @apply text-sm font-medium transition-colors hover:text-accent text-foreground;
+  }
+  
+  .navbar-link--active {
+    @apply text-primary font-semibold;
+  }
+  
+  .navbar-link--inactive {
+    @apply text-foreground hover:text-accent;
+  }
+
+  /* Dashboard Styles */
+  .dashboard-container {
+    @apply max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8;
+  }
+  
+  .dashboard-title {
+    @apply text-3xl font-bold text-foreground mb-8;
+  }
+  
+  .dashboard-grid {
+    @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6;
+  }
+  
+  .dashboard-card {
+    @apply bg-card text-card-foreground rounded-lg border border-border shadow-lg p-6 hover:shadow-xl transition-all duration-200;
+  }
+  
+  .dashboard-card-icon {
+    @apply text-2xl mb-2;
+  }
+  
+  .dashboard-card-title {
+    @apply text-sm font-medium text-muted-foreground mb-1;
+  }
+  
+  .dashboard-card-value {
+    @apply text-2xl font-bold text-card-foreground mb-4;
+  }
+  
+  .dashboard-card-link {
+    @apply text-sm text-primary hover:text-primary/80 font-medium transition-colors underline;
+  }
+
+  /* Layout Styles */
+  .main-layout {
+    @apply min-h-screen bg-background;
+  }
+  
+  .main-content {
+    @apply flex-1 space-y-4 p-4 md:p-8 pt-6;
+  }
+  
+  .page-header {
+    @apply flex items-center justify-between space-y-2 pb-4 border-b border-border;
+  }
+  
+  .page-title {
+    @apply text-3xl font-bold tracking-tight text-foreground;
+  }
+  
+  .page-description {
+    @apply text-muted-foreground;
+  }
+
+  /* Form Styles */
+  .form-container {
+    @apply space-y-6 max-w-2xl mx-auto;
+  }
+  
+  .form-group {
+    @apply space-y-2;
+  }
+  
+  .form-label {
+    @apply text-sm font-medium leading-none text-foreground peer-disabled:cursor-not-allowed peer-disabled:opacity-70;
+  }
+  
+  .form-input {
+    @apply flex h-10 w-full rounded-md border border-border bg-input px-3 py-2 text-sm text-foreground ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50;
+  }
+  
+  .form-textarea {
+    @apply flex min-h-[80px] w-full rounded-md border border-border bg-input px-3 py-2 text-sm text-foreground ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50;
+  }
+  
+  .form-select {
+    @apply flex h-10 w-full items-center justify-between rounded-md border border-border bg-input px-3 py-2 text-sm text-foreground ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50;
+  }
+  
+  .form-error {
+    @apply text-sm font-medium text-destructive;
+  }
+  
+  .form-help {
+    @apply text-sm text-muted-foreground;
+  }
+
+  /* Table Styles */
+  .table-container {
+    @apply relative w-full overflow-auto;
+  }
+  
+  .table {
+    @apply w-full caption-bottom text-sm;
+  }
+  
+  .table-header {
+    @apply border-b border-border;
+  }
+  
+  .table-header-row {
+    @apply border-b border-border transition-colors hover:bg-muted/20;
+  }
+  
+  .table-header-cell {
+    @apply h-12 px-4 text-left align-middle font-medium text-foreground;
+  }
+  
+  .table-body {
+    @apply [&_tr:last-child]:border-0;
+  }
+  
+  .table-row {
+    @apply border-b border-border transition-colors hover:bg-muted/20;
+  }
+  
+  .table-cell {
+    @apply p-4 align-middle text-foreground;
+  }
+
+  /* Loading States */
+  .loading-spinner {
+    @apply animate-spin rounded-full h-8 w-8 border-b-2 border-primary;
+  }
+  
+  .loading-skeleton {
+    @apply animate-pulse bg-muted rounded;
+  }
+  
+  .loading-text {
+    @apply text-muted-foreground text-sm;
+  }
+
+  /* Status Indicators */
+  .status-badge {
+    @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium;
+  }
+  
+  .status-badge--success {
+    @apply bg-green-600 text-white;
+  }
+  
+  .status-badge--warning {
+    @apply bg-yellow-600 text-white;
+  }
+  
+  .status-badge--error {
+    @apply bg-red-600 text-white;
+  }
+  
+  .status-badge--info {
+    @apply bg-blue-600 text-white;
+  }
+
+  /* Invoice Specific Styles */
+  .invoice-container {
+    @apply max-w-4xl mx-auto bg-card shadow-lg rounded-lg overflow-hidden border border-border;
+  }
+  
+  .invoice-header {
+    @apply bg-primary text-primary-foreground p-6;
+  }
+  
+  .invoice-title {
+    @apply text-2xl font-bold mb-2 text-primary-foreground;
+  }
+  
+  .invoice-number {
+    @apply text-primary-foreground/80;
+  }
+  
+  .invoice-details {
+    @apply p-6 space-y-6 bg-card;
+  }
+  
+  .invoice-section {
+    @apply space-y-4;
+  }
+  
+  .invoice-section-title {
+    @apply text-lg font-semibold text-foreground border-b border-border pb-2;
+  }
+  
+  .invoice-grid {
+    @apply grid grid-cols-1 md:grid-cols-2 gap-6;
+  }
+  
+  .invoice-field {
+    @apply space-y-1;
+  }
+  
+  .invoice-field-label {
+    @apply text-sm font-medium text-muted-foreground;
+  }
+  
+  .invoice-field-value {
+    @apply text-foreground;
+  }
+  
+  .invoice-items-table {
+    @apply w-full border-collapse;
+  }
+  
+  .invoice-items-header {
+    @apply bg-muted text-left;
+  }
+  
+  .invoice-items-header th {
+    @apply p-3 font-medium text-foreground;
+  }
+  
+  .invoice-items-row {
+    @apply border-b border-border;
+  }
+  
+  .invoice-items-cell {
+    @apply p-3 text-foreground;
+  }
+  
+  .invoice-total {
+    @apply bg-muted p-4 rounded-lg;
+  }
+  
+  .invoice-total-row {
+    @apply flex justify-between items-center py-1;
+  }
+  
+  .invoice-total-label {
+    @apply text-foreground;
+  }
+  
+  .invoice-total-value {
+    @apply font-medium text-foreground;
+  }
+  
+  .invoice-total-final {
+    @apply text-lg font-bold text-foreground border-t border-border pt-2 mt-2;
+  }
+
+  /* Utility Classes */
+  .text-gradient {
+    @apply bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent;
+  }
+  
+  .glass-effect {
+    @apply bg-background/80 backdrop-blur-sm border border-border/50;
+  }
+  
+  .hover-lift {
+    @apply transition-transform hover:scale-105;
+  }
+  
+  .focus-ring {
+    @apply focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2;
+  }
+  
+  .truncate-2 {
+    @apply overflow-hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
+  
+  .truncate-3 {
+    @apply overflow-hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+  }
+}
+
+/* ==========================================================================
+   RESPONSIVE UTILITIES
+   ========================================================================== */
+
+@layer utilities {
+  .container-fluid {
+    @apply w-full px-4 sm:px-6 lg:px-8;
+  }
+  
+  .section-padding {
+    @apply py-12 sm:py-16 lg:py-20;
+  }
+  
+  .content-padding {
+    @apply px-4 sm:px-6 lg:px-8;
+  }
+}
+
+/* ==========================================================================
+   ANIMATIONS
+   ========================================================================== */
+
+@layer utilities {
+  .animate-fade-in {
+    animation: fadeIn 0.5s ease-in-out;
+  }
+  
+  .animate-slide-up {
+    animation: slideUp 0.3s ease-out;
+  }
+  
+  .animate-slide-down {
+    animation: slideDown 0.3s ease-out;
+  }
+  
+  .animate-scale-in {
+    animation: scaleIn 0.2s ease-out;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(10px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideDown {
+  from {
+    transform: translateY(-10px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* ==========================================================================
+   PRINT STYLES
+   ========================================================================== */
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  
+  .print-only {
+    display: block !important;
+  }
+  
+  .invoice-container {
+    @apply shadow-none border border-gray-300;
+  }
+  
+  .invoice-header {
+    @apply bg-gray-100 text-gray-900;
+  }
+  
+  body {
+    @apply text-gray-900 bg-white;
   }
 }

@@ -6,7 +6,7 @@
 
 generator client {
   provider = "prisma-client-js"
-  output   = "../app/prisma"
+  engineType = "library"
 }
 
 datasource db {
@@ -18,7 +18,8 @@ datasource db {
 // ill need to store customers, invoices, and products
 // the customers will have a unique id incremented by 1,name, email, phone number, address
 // the products will have a unique id incremented by 1, name, description, price
-// the invoice will have a unique id incremented by 1, customer id as a foreign key, product id as a foreign key, quantity of each product, total price, date
+// the invoice will have a unique id incremented by 1, customer id as a foreign key, total price, date
+// invoice items will link invoices to products with quantities and individual totals
 
 model Customer {
   customerId        Int   @id @default(autoincrement())
@@ -28,20 +29,34 @@ model Customer {
   customerAddress   String
   invoices Invoice[]
 }
+
 model Product {
   productId        Int   @id @default(autoincrement())
   productName      String
   productDescription String
   productPrice     Float
-  invoices Invoice[]
+  invoiceItems InvoiceItem[]
 }
+
 model Invoice {
   invoiceId Int @id @default(autoincrement())
   customerId Int
   customer Customer @relation(fields: [customerId], references: [customerId])
+  subtotal Float
+  tax Float
+  totalPrice Float
+  invoiceDate DateTime @default(now())
+  status String @default("completed")
+  invoiceItems InvoiceItem[]
+}
+
+model InvoiceItem {
+  invoiceItemId Int @id @default(autoincrement())
+  invoiceId Int
+  invoice Invoice @relation(fields: [invoiceId], references: [invoiceId], onDelete: Cascade)
   productId Int
   product Product @relation(fields: [productId], references: [productId])
   quantity Int
+  unitPrice Float
   totalPrice Float
-  invoiceDate DateTime @default(now())
 }
