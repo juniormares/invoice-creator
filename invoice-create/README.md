@@ -94,6 +94,7 @@ Built with ❤️ using React Router.
 -create pgdb with invoice schema
 -create docker container with pg invoice schema
 -git clone this app
+-make sure website.bat runs and cd into app
 -npm install && npx prisma generate 
 -npx prisma db push
 -tsx app/scripts/seed.ts
