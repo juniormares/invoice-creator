@@ -1,20 +1,74 @@
 //view invoice route
 
-import { useLoaderData } from "react-router";
+import { useLoaderData, useActionData, useNavigate } from "react-router";
 import { NavBar } from "~/components/ui/navBar";
 import { Button } from "~/components/ui/button";
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "~/components/ui/table";
-import { getInvoices } from "~/scripts/invoices_scripts";
+import { getInvoices, deleteInvoice } from "~/scripts/invoices_scripts";
 import { Link } from "react-router";
+import { InvoicePDFButton } from "~/components/ui/InvoicePDF";
+import * as React from "react";
 
 export async function loader() {
     const invoices = await getInvoices();
     return { invoices };
 }
 
+export async function action({ request }: { request: Request }) {
+    const formData = await request.formData();
+    const action = formData.get("_action") as string;
+    const invoiceId = parseInt(formData.get("invoiceId") as string);
+    
+    if (action === "delete") {
+        try {
+            await deleteInvoice(invoiceId);
+            return { success: true, message: 'Invoice deleted successfully' };
+        } catch (error) {
+            console.error('Error deleting invoice:', error);
+            return { success: false, error: 'Failed to delete invoice' };
+        }
+    }
+    
+    return { success: false, error: 'Invalid action' };
+}
+
 export default function ViewInvoice() {
     const { invoices } = useLoaderData<typeof loader>();
-    
+    const actionData = useActionData<typeof action>();
+    const navigate = useNavigate();
+
+    // Handle action results
+    React.useEffect(() => {
+        if (actionData?.success) {
+            alert(actionData.message);
+            // Refresh the page to show updated data
+            navigate('/invoice', { replace: true });
+        } else if (actionData?.error) {
+            alert(actionData.error);
+        }
+    }, [actionData, navigate]);
+
+    const handleDelete = (invoiceId: number) => {
+        if (confirm(`Are you sure you want to delete invoice #${invoiceId.toString().padStart(4, '0')}? This action cannot be undone.`)) {
+            const form = document.createElement('form');
+            form.method = 'post';
+            form.style.display = 'none';
+            
+            const actionInput = document.createElement('input');
+            actionInput.name = '_action';
+            actionInput.value = 'delete';
+            form.appendChild(actionInput);
+            
+            const idInput = document.createElement('input');
+            idInput.name = 'invoiceId';
+            idInput.value = invoiceId.toString();
+            form.appendChild(idInput);
+            
+            document.body.appendChild(form);
+            form.submit();
+        }
+    };
+
     // Helper function to format date
     const formatDate = (dateString: string) => {
         return new Date(dateString).toLocaleDateString('en-US', {
@@ -69,6 +123,7 @@ export default function ViewInvoice() {
                                             <TableHead className="text-right">Total</TableHead>
                                             <TableHead className="text-center">Date</TableHead>
                                             <TableHead className="text-center">Status</TableHead>
+                                            <TableHead className="text-center">Actions</TableHead>
                                         </TableRow>
                                     </TableHeader>
                                     <TableBody>
@@ -131,6 +186,29 @@ export default function ViewInvoice() {
                                                     <span className="status-badge status-badge--success">
                                                         {invoice.status}
                                                     </span>
+                                                </TableCell>
+                                                <TableCell className="text-center">
+                                                    <div className="flex gap-1 justify-center">
+                                                        <InvoicePDFButton
+                                                            invoice={invoice}
+                                                            buttonText="PDF"
+                                                            variant="outline"
+                                                            size="sm"
+                                                        />
+                                                        <Button variant="outline" size="sm" asChild>
+                                                            <Link to={`/invoice/edit/${invoice.invoiceId}`}>
+                                                                Edit
+                                                            </Link>
+                                                        </Button>
+                                                        <Button 
+                                                            variant="outline" 
+                                                            size="sm" 
+                                                            className="text-red-600 hover:text-red-800"
+                                                            onClick={() => handleDelete(invoice.invoiceId)}
+                                                        >
+                                                            Delete
+                                                        </Button>
+                                                    </div>
                                                 </TableCell>
                                             </TableRow>
                                         ))}

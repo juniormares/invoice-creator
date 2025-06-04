@@ -76,4 +76,18 @@ export async function updateCustomer(id: number, customer: any) {
     }
 }
 
+//function to delete a customer
+export async function deleteCustomer(id: number) {
+    try {
+        if (!client) throw new Error("Database client not available on client side");
+        const deletedCustomer = await client.customer.delete({
+            where: { customerId: id }
+        })  
+        return deletedCustomer
+    } catch (error) {
+        console.error('Error deleting customer:', error)
+        return null
+    }
+}
+
 export default client

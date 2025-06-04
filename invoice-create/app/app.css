@@ -225,7 +225,7 @@ body {
 
   /* Form Styles */
   .form-container {
-    @apply space-y-6 max-w-2xl mx-auto;
+    @apply space-y-6 w-11/12 mx-auto;
   }
   
   .form-group {
@@ -325,7 +325,7 @@ body {
 
   /* Invoice Specific Styles */
   .invoice-container {
-    @apply max-w-4xl mx-auto bg-card shadow-lg rounded-lg overflow-hidden border border-border;
+    @apply max-w-7xl mx-auto bg-card shadow-lg rounded-lg overflow-hidden border border-border;
   }
   
   .invoice-header {
@@ -341,7 +341,7 @@ body {
   }
   
   .invoice-details {
-    @apply p-6 space-y-6 bg-card;
+    @apply px-4 py-6 space-y-6 bg-card;
   }
   
   .invoice-section {

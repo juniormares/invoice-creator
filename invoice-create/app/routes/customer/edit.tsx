@@ -1,10 +1,22 @@
 import { NavBar } from "~/components/ui/navBar";
 import { Button } from "~/components/ui/button";
-import { createCustomer } from "~/scripts/customer_scripts";
-import { useNavigate, useActionData, Form } from "react-router";
+import { getCustomerById, updateCustomer } from "~/scripts/customer_scripts";
+import { useNavigate, useActionData, useLoaderData, Form } from "react-router";
 import * as React from "react";
 
-export async function action({ request }: { request: Request }) {
+export async function loader({ params }: { params: { id: string } }) {
+    const customerId = parseInt(params.id);
+    const customer = await getCustomerById(customerId);
+    
+    if (!customer) {
+        throw new Response("Customer not found", { status: 404 });
+    }
+    
+    return { customer };
+}
+
+export async function action({ request, params }: { request: Request; params: { id: string } }) {
+    const customerId = parseInt(params.id);
     const formData = await request.formData();
     const customerData = {
         customerName: formData.get("customerName") as string,
@@ -14,28 +26,29 @@ export async function action({ request }: { request: Request }) {
     };
     
     try {
-        const newCustomer = await createCustomer(customerData);
-        return { success: true, customer: newCustomer };
+        const updatedCustomer = await updateCustomer(customerId, customerData);
+        return { success: true, customer: updatedCustomer };
     } catch (error) {
-        console.error('Error creating customer:', error);
-        return { success: false, error: 'Failed to create customer' };
+        console.error('Error updating customer:', error);
+        return { success: false, error: 'Failed to update customer' };
     }
 }
 
-export default function CustomerAdd() {
+export default function CustomerEdit() {
+    const { customer } = useLoaderData<typeof loader>();
     const navigate = useNavigate();
     const actionData = useActionData<typeof action>();
     const [formData, setFormData] = React.useState({
-        customerName: "",
-        customerEmail: "",
-        customerPhone: "",
-        customerAddress: ""
+        customerName: customer.customerName || "",
+        customerEmail: customer.customerEmail || "",
+        customerPhone: customer.customerPhone || "",
+        customerAddress: customer.customerAddress || ""
     });
 
     // Handle successful submission
     React.useEffect(() => {
         if (actionData?.success) {
-            alert('Customer created successfully!');
+            alert('Customer updated successfully!');
             navigate('/customer');
         } else if (actionData?.error) {
             alert(actionData.error);
@@ -81,8 +94,8 @@ export default function CustomerAdd() {
             <main className="main-content animate-fade-in">
                 <div className="invoice-container">
                     <div className="invoice-header">
-                        <h2 className="invoice-title">Add New Customer</h2>
-                        <p className="invoice-number">New</p>
+                        <h2 className="invoice-title">Edit Customer</h2>
+                        <p className="invoice-number">#{customer.customerId}</p>
                     </div>
                     
                     <div className="invoice-details">
@@ -160,7 +173,7 @@ export default function CustomerAdd() {
                                     Cancel
                                 </Button>
                                 <Button type="submit">
-                                    Add Customer
+                                    Update Customer
                                 </Button>
                             </div>
                         </Form>
@@ -169,4 +182,4 @@ export default function CustomerAdd() {
             </main>
         </div>
     );
-}
+} 

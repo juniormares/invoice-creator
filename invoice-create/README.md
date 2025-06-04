@@ -85,3 +85,16 @@ This template comes with [Tailwind CSS](https://tailwindcss.com/) already config
 ---
 
 Built with ❤️ using React Router.
+
+# installation instruction
+
+-download postgres
+-download docker desktop
+-(optional) download dbeaver
+-create pgdb with invoice schema
+-create docker container with pg invoice schema
+-git clone this app
+-npm install && npx prisma generate 
+-npx prisma db push
+-tsx app/scripts/seed.ts
+-npm run build && npm run dev

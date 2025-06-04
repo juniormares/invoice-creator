@@ -1,10 +1,22 @@
 import { NavBar } from "~/components/ui/navBar";
 import { Button } from "~/components/ui/button";
-import { createProduct, getProducts } from "~/scripts/product_scripts";
-import { useNavigate, useActionData, Form } from "react-router";
+import { getProductById, updateProduct } from "~/scripts/product_scripts";
+import { useNavigate, useActionData, useLoaderData, Form } from "react-router";
 import * as React from "react";
 
-export async function action({ request }: { request: Request }) {
+export async function loader({ params }: { params: { id: string } }) {
+    const productId = parseInt(params.id);
+    const product = await getProductById(productId);
+    
+    if (!product) {
+        throw new Response("Product not found", { status: 404 });
+    }
+    
+    return { product };
+}
+
+export async function action({ request, params }: { request: Request; params: { id: string } }) {
+    const productId = parseInt(params.id);
     const formData = await request.formData();
     const productData = {
         productName: formData.get("productName") as string,
@@ -13,32 +25,28 @@ export async function action({ request }: { request: Request }) {
     };
     
     try {
-        const newProduct = await createProduct(productData);
-        return { success: true, product: newProduct };
+        const updatedProduct = await updateProduct(productId, productData);
+        return { success: true, product: updatedProduct };
     } catch (error) {
-        console.error('Error creating product:', error);
-        return { success: false, error: 'Failed to create product' };
+        console.error('Error updating product:', error);
+        return { success: false, error: 'Failed to update product' };
     }
 }
 
-export async function loader() {
-    const products = await getProducts();
-    return { products };
-}
-
-export default function ProductAdd() {
+export default function ProductEdit() {
+    const { product } = useLoaderData<typeof loader>();
     const navigate = useNavigate();
     const actionData = useActionData<typeof action>();
     const [formData, setFormData] = React.useState({
-        productName: "",
-        productDescription: "",
-        productPrice: ""
+        productName: product.productName || "",
+        productDescription: product.productDescription || "",
+        productPrice: product.productPrice?.toString() || ""
     });
 
     // Handle successful submission
     React.useEffect(() => {
         if (actionData?.success) {
-            alert('Product created successfully!');
+            alert('Product updated successfully!');
             navigate('/product');
         } else if (actionData?.error) {
             alert(actionData.error);
@@ -84,8 +92,8 @@ export default function ProductAdd() {
             <main className="main-content animate-fade-in">
                 <div className="invoice-container">
                     <div className="invoice-header">
-                        <h2 className="invoice-title">Add New Product</h2>
-                        <p className="invoice-number">New</p>
+                        <h2 className="invoice-title">Edit Product</h2>
+                        <p className="invoice-number">#{product.productId}</p>
                     </div>
                     
                     <div className="invoice-details">
@@ -149,7 +157,7 @@ export default function ProductAdd() {
                                     Cancel
                                 </Button>
                                 <Button type="submit">
-                                    Add Product
+                                    Update Product
                                 </Button>
                             </div>
                         </Form>
@@ -158,4 +166,4 @@ export default function ProductAdd() {
             </main>
         </div>
     );
-}
+} 

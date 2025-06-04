@@ -2,7 +2,7 @@ import { NavBar } from "~/components/ui/navBar"
 import { Button } from "~/components/ui/button"
 import { getCustomers } from "~/scripts/customer_scripts";
 import { getProducts } from "~/scripts/product_scripts";
-import { createInvoice } from "~/scripts/invoices_scripts";
+import { getInvoiceById, updateInvoice } from "~/scripts/invoices_scripts";
 import { useLoaderData, useNavigate, useActionData, Form } from "react-router";
 import * as React from "react";
 import {
@@ -21,15 +21,24 @@ import {
 import { Check, ChevronsUpDown } from "lucide-react";
 import { cn } from "~/lib/utils";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "~/components/ui/table";
-import { InvoicePreviewPDFButton } from "~/components/ui/InvoicePreviewPDF";
 
-export async function loader() {
-    const customers = await getCustomers();
-    const products = await getProducts();
-    return { customers, products };
+export async function loader({ params }: { params: { id: string } }) {
+    const invoiceId = parseInt(params.id);
+    const [invoice, customers, products] = await Promise.all([
+        getInvoiceById(invoiceId),
+        getCustomers(),
+        getProducts()
+    ]);
+    
+    if (!invoice) {
+        throw new Response("Invoice not found", { status: 404 });
+    }
+    
+    return { invoice, customers, products };
 }
 
-export async function action({ request }: { request: Request }) {
+export async function action({ request, params }: { request: Request; params: { id: string } }) {
+    const invoiceId = parseInt(params.id);
     const formData = await request.formData();
     const invoiceDataString = formData.get("invoiceData") as string;
     
@@ -39,25 +48,41 @@ export async function action({ request }: { request: Request }) {
     
     try {
         const invoiceData = JSON.parse(invoiceDataString);
-        const newInvoice = await createInvoice(invoiceData);
-        return { success: true, invoice: newInvoice };
+        
+        // For simplicity, we'll update basic invoice info only
+        // In a real app, you might want to handle item updates more sophisticatedly
+        const updatedInvoice = await updateInvoice(invoiceId, {
+            customerId: invoiceData.customerId,
+            subtotal: invoiceData.subtotal,
+            tax: invoiceData.tax,
+            totalPrice: invoiceData.totalPrice
+        });
+        
+        return { success: true, invoice: updatedInvoice };
     } catch (error) {
-        console.error('Error creating invoice:', error);
-        return { success: false, error: 'Failed to create invoice: ' + (error instanceof Error ? error.message : 'Unknown error') };
+        console.error('Error updating invoice:', error);
+        return { success: false, error: 'Failed to update invoice: ' + (error instanceof Error ? error.message : 'Unknown error') };
     }
 }
 
-export default function InvoiceAdd() {
-    const { customers, products } = useLoaderData<typeof loader>();
+export default function InvoiceEdit() {
+    const { invoice, customers, products } = useLoaderData<typeof loader>();
     const navigate = useNavigate();
     const actionData = useActionData<typeof action>();
     const [open, setOpen] = React.useState(false);
-    const [value, setValue] = React.useState("");
+    const [value, setValue] = React.useState(invoice.customerId.toString());
     
-    // State for invoice items
-    const [invoiceItems, setInvoiceItems] = React.useState([
-        { id: 1, productId: "", productName: "", quantity: 1, rate: 0, amount: 0 }
-    ]);
+    // Initialize invoice items from existing invoice
+    const [invoiceItems, setInvoiceItems] = React.useState(
+        invoice.invoiceItems.map((item: any, index: number) => ({
+            id: index + 1,
+            productId: item.productId.toString(),
+            productName: item.product.productName,
+            quantity: item.quantity,
+            rate: item.unitPrice,
+            amount: item.totalPrice
+        }))
+    );
 
     // State for tracking which product dropdowns are open
     const [productOpenStates, setProductOpenStates] = React.useState<{[key: number]: boolean}>({});
@@ -65,7 +90,7 @@ export default function InvoiceAdd() {
     // Handle successful submission
     React.useEffect(() => {
         if (actionData?.success) {
-            alert('Invoice created successfully!');
+            alert('Invoice updated successfully!');
             navigate('/invoice');
         } else if (actionData?.error) {
             alert(actionData.error);
@@ -91,7 +116,6 @@ export default function InvoiceAdd() {
             rate: 0, 
             amount: 0 
         }]);
-        // Initialize the dropdown state for the new item
         setProductOpenStates(prev => ({
             ...prev,
             [newId]: false
@@ -102,7 +126,6 @@ export default function InvoiceAdd() {
     const removeInvoiceItem = (id: number) => {
         if (invoiceItems.length > 1) {
             setInvoiceItems(invoiceItems.filter(item => item.id !== id));
-            // Clean up the dropdown state for the removed item
             setProductOpenStates(prev => {
                 const newStates = { ...prev };
                 delete newStates[id];
@@ -117,7 +140,6 @@ export default function InvoiceAdd() {
             if (item.id === id) {
                 const updatedItem = { ...item, [field]: value };
                 
-                // If product is selected, auto-populate the rate
                 if (field === 'productId') {
                     const selectedProduct = products.find((p: any) => p.productId.toString() === value);
                     if (selectedProduct) {
@@ -127,13 +149,11 @@ export default function InvoiceAdd() {
                     }
                 }
                 
-                // If quantity changes, recalculate amount (allow empty values)
                 if (field === 'quantity') {
                     const qty = value === '' ? 0 : value;
                     updatedItem.amount = qty * updatedItem.rate;
                 }
                 
-                // If rate changes, recalculate amount (allow empty values)
                 if (field === 'rate') {
                     const rate = value === '' ? 0 : value;
                     updatedItem.amount = updatedItem.quantity * rate;
@@ -152,14 +172,12 @@ export default function InvoiceAdd() {
 
     // Handle form submission
     const handleSubmit = (e: React.FormEvent) => {
-        // Validation
         if (!value) {
             e.preventDefault();
             alert('Please select a customer');
             return;
         }
         
-        // Validate invoice items
         const validItems = invoiceItems.filter(item => item.productId);
         if (validItems.length === 0) {
             e.preventDefault();
@@ -167,18 +185,16 @@ export default function InvoiceAdd() {
             return;
         }
         
-        // Check for empty or zero quantities and rates
         const invalidItems = validItems.filter(item => 
             !item.quantity || item.quantity <= 0 || !item.rate || item.rate <= 0
         );
         
         if (invalidItems.length > 0) {
             e.preventDefault();
-            alert('Please ensure all items have valid quantities (greater than 0) and rates (greater than 0)');
+            alert('Please ensure all items have valid quantities and rates');
             return;
         }
         
-        // If validation passes, prepare data for submission
         const invoiceData = {
             customerId: parseInt(value),
             items: validItems.map(item => ({
@@ -192,7 +208,6 @@ export default function InvoiceAdd() {
             totalPrice: total
         };
         
-        // Add the invoice data to the form as a hidden field
         const form = e.target as HTMLFormElement;
         const hiddenInput = document.createElement('input');
         hiddenInput.type = 'hidden';
@@ -207,8 +222,8 @@ export default function InvoiceAdd() {
             <main className="main-content animate-fade-in">
                 <div className="invoice-container">
                     <div className="invoice-header">
-                        <h2 className="invoice-title">New Invoice</h2>
-                        <p className="invoice-number">Draft</p>
+                        <h2 className="invoice-title">Edit Invoice</h2>
+                        <p className="invoice-number">#{invoice.invoiceId.toString().padStart(4, '0')}</p>
                     </div>
                     
                     <div className="invoice-details">
@@ -405,17 +420,15 @@ export default function InvoiceAdd() {
                             </div>
                             
                             <div className="flex gap-4 justify-end mt-8">
-                                <InvoicePreviewPDFButton
-                                    customer={customers.find((customer: any) => customer.customerId.toString() === value)}
-                                    invoiceItems={invoiceItems}
-                                    subtotal={subtotal}
-                                    tax={tax}
-                                    total={total}
-                                    buttonText="Preview PDF"
+                                <Button 
+                                    type="button" 
                                     variant="outline"
-                                />
+                                    onClick={() => navigate('/invoice')}
+                                >
+                                    Cancel
+                                </Button>
                                 <Button type="submit">
-                                    Create Invoice
+                                    Update Invoice
                                 </Button>
                             </div>
                         </Form>
@@ -424,4 +437,4 @@ export default function InvoiceAdd() {
             </main>
         </div>
     )
-}
+} 

@@ -1,17 +1,70 @@
-import { useLoaderData } from "react-router";
+import { useLoaderData, useActionData, useNavigate } from "react-router";
 import { NavBar } from "~/components/ui/navBar";
 import { Button } from "~/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "~/components/ui/table";
-import { getProducts } from "~/scripts/product_scripts";
+import { getProducts, deleteProduct } from "~/scripts/product_scripts";
 import { Link } from "react-router";
+import * as React from "react";
 
 export async function loader() {
     const products = await getProducts();
     return { products };
 }
 
+export async function action({ request }: { request: Request }) {
+    const formData = await request.formData();
+    const action = formData.get("_action") as string;
+    const productId = parseInt(formData.get("productId") as string);
+    
+    if (action === "delete") {
+        try {
+            await deleteProduct(productId);
+            return { success: true, message: 'Product deleted successfully' };
+        } catch (error) {
+            console.error('Error deleting product:', error);
+            return { success: false, error: 'Failed to delete product' };
+        }
+    }
+    
+    return { success: false, error: 'Invalid action' };
+}
+
 export default function ViewProducts() {
     const { products } = useLoaderData<typeof loader>();
+    const actionData = useActionData<typeof action>();
+    const navigate = useNavigate();
+
+    // Handle action results
+    React.useEffect(() => {
+        if (actionData?.success) {
+            alert(actionData.message);
+            // Refresh the page to show updated data
+            navigate('/product', { replace: true });
+        } else if (actionData?.error) {
+            alert(actionData.error);
+        }
+    }, [actionData, navigate]);
+
+    const handleDelete = (productId: number, productName: string) => {
+        if (confirm(`Are you sure you want to delete product "${productName}"? This action cannot be undone.`)) {
+            const form = document.createElement('form');
+            form.method = 'post';
+            form.style.display = 'none';
+            
+            const actionInput = document.createElement('input');
+            actionInput.name = '_action';
+            actionInput.value = 'delete';
+            form.appendChild(actionInput);
+            
+            const idInput = document.createElement('input');
+            idInput.name = 'productId';
+            idInput.value = productId.toString();
+            form.appendChild(idInput);
+            
+            document.body.appendChild(form);
+            form.submit();
+        }
+    };
     
     return (
         <div className="main-layout">
@@ -79,10 +132,17 @@ export default function ViewProducts() {
                                                 </TableCell>
                                                 <TableCell className="text-center">
                                                     <div className="flex gap-2 justify-center">
-                                                        <Button variant="outline" size="sm">
-                                                            Edit
+                                                        <Button variant="outline" size="sm" asChild>
+                                                            <Link to={`/product/edit/${product.productId}`}>
+                                                                Edit
+                                                            </Link>
                                                         </Button>
-                                                        <Button variant="outline" size="sm" className="text-red-600 hover:text-red-800">
+                                                        <Button 
+                                                            variant="outline" 
+                                                            size="sm" 
+                                                            className="text-red-600 hover:text-red-800"
+                                                            onClick={() => handleDelete(product.productId, product.productName)}
+                                                        >
                                                             Delete
                                                         </Button>
                                                     </div>
@@ -99,9 +159,6 @@ export default function ViewProducts() {
                                 <div className="flex justify-between items-center text-sm">
                                     <span className="text-muted-foreground">
                                         Total Products: {products.length}
-                                    </span>
-                                    <span className="font-semibold text-foreground">
-                                        Average Price: ${(products.reduce((sum: number, product: any) => sum + product.productPrice, 0) / products.length).toFixed(2)}
                                     </span>
                                 </div>
                             </div>

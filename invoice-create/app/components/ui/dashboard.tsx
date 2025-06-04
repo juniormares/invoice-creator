@@ -54,7 +54,7 @@ export function Dashboard() {
                         {customerCount}
                     </CardTitle>
                     <CardAction>
-                        <Link to="/customers" className="dashboard-card-link">View All Customers</Link>
+                        <Link to="/customer" className="dashboard-card-link">View All Customers</Link>
                     </CardAction>
                 </Card>
 
@@ -68,7 +68,7 @@ export function Dashboard() {
                         {productCount}
                     </CardTitle>
                     <CardAction>
-                        <Link to="/products" className="dashboard-card-link">View All Products</Link>
+                        <Link to="/product" className="dashboard-card-link">View All Products</Link>
                     </CardAction>
                 </Card>
             </div>

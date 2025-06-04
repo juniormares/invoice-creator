@@ -76,4 +76,18 @@ export async function updateProduct(id: number, product: any) {
     }
 }
 
+//function to delete a product
+export async function deleteProduct(id: number) {
+    try {
+        if (!client) throw new Error("Database client not available on client side");
+        const deletedProduct = await client.product.delete({
+            where: { productId: id }
+        })  
+        return deletedProduct
+    } catch (error) {
+        console.error('Error deleting product:', error)
+        return null
+    }
+}
+
 export default client   

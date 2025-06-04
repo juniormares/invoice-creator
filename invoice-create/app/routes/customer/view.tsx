@@ -1,17 +1,70 @@
-import { useLoaderData } from "react-router";
+import { useLoaderData, useActionData, useNavigate } from "react-router";
 import { NavBar } from "~/components/ui/navBar";
 import { Button } from "~/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "~/components/ui/table";
-import { getCustomers } from "~/scripts/customer_scripts";
+import { getCustomers, deleteCustomer } from "~/scripts/customer_scripts";
 import { Link } from "react-router";
+import * as React from "react";
 
 export async function loader() {
     const customers = await getCustomers();
     return { customers };
 }
 
+export async function action({ request }: { request: Request }) {
+    const formData = await request.formData();
+    const action = formData.get("_action") as string;
+    const customerId = parseInt(formData.get("customerId") as string);
+    
+    if (action === "delete") {
+        try {
+            await deleteCustomer(customerId);
+            return { success: true, message: 'Customer deleted successfully' };
+        } catch (error) {
+            console.error('Error deleting customer:', error);
+            return { success: false, error: 'Failed to delete customer' };
+        }
+    }
+    
+    return { success: false, error: 'Invalid action' };
+}
+
 export default function ViewCustomers() {
     const { customers } = useLoaderData<typeof loader>();
+    const actionData = useActionData<typeof action>();
+    const navigate = useNavigate();
+
+    // Handle action results
+    React.useEffect(() => {
+        if (actionData?.success) {
+            alert(actionData.message);
+            // Refresh the page to show updated data
+            navigate('/customer', { replace: true });
+        } else if (actionData?.error) {
+            alert(actionData.error);
+        }
+    }, [actionData, navigate]);
+
+    const handleDelete = (customerId: number, customerName: string) => {
+        if (confirm(`Are you sure you want to delete customer "${customerName}"? This action cannot be undone.`)) {
+            const form = document.createElement('form');
+            form.method = 'post';
+            form.style.display = 'none';
+            
+            const actionInput = document.createElement('input');
+            actionInput.name = '_action';
+            actionInput.value = 'delete';
+            form.appendChild(actionInput);
+            
+            const idInput = document.createElement('input');
+            idInput.name = 'customerId';
+            idInput.value = customerId.toString();
+            form.appendChild(idInput);
+            
+            document.body.appendChild(form);
+            form.submit();
+        }
+    };
     
     return (
         <div className="main-layout">
@@ -85,10 +138,17 @@ export default function ViewCustomers() {
                                                 </TableCell>
                                                 <TableCell className="text-center">
                                                     <div className="flex gap-2 justify-center">
-                                                        <Button variant="outline" size="sm">
-                                                            Edit
+                                                        <Button variant="outline" size="sm" asChild>
+                                                            <Link to={`/customer/edit/${customer.customerId}`}>
+                                                                Edit
+                                                            </Link>
                                                         </Button>
-                                                        <Button variant="outline" size="sm" className="text-red-600 hover:text-red-800">
+                                                        <Button 
+                                                            variant="outline" 
+                                                            size="sm" 
+                                                            className="text-red-600 hover:text-red-800"
+                                                            onClick={() => handleDelete(customer.customerId, customer.customerName)}
+                                                        >
                                                             Delete
                                                         </Button>
                                                     </div>
